@@ -1,6 +1,8 @@
 package se.yrgo.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -11,34 +13,39 @@ import se.yrgo.domain.Customer;
 import se.yrgo.services.calls.CallHandlingService;
 import se.yrgo.services.customers.CustomerManagementService;
 import se.yrgo.services.customers.CustomerNotFoundException;
+import se.yrgo.services.diary.DiaryManagementService;
 
 public class SimpleClient {
 
-    public static void main(String[] args) throws CustomerNotFoundException {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application.xml");
+	public static void main(String[] args) {
+		ClassPathXmlApplicationContext container = new ClassPathXmlApplicationContext("application.xml");
 
-        CustomerManagementService customerManagementService = context.getBean("customerManagementService",
-                CustomerManagementService.class);
+		CustomerManagementService customerService = container.getBean(CustomerManagementService.class);
+		CallHandlingService callService = container.getBean(CallHandlingService.class);
+		DiaryManagementService diaryService = container.getBean(DiaryManagementService.class);
 
-        // Print every customer
-        customerManagementService.getAllCustomers().forEach(System.out::println);
+		customerService.newCustomer(new Customer("CS03939", "Acme", "Good Customer"));
 
-        CallHandlingService callHandlingService = context.getBean("callHandlingService", CallHandlingService.class);
+		Call newCall = new Call("Larry Wall called from Acme Corp");
+		Action action1 = new Action("Call back Larry to ask how things are going", new GregorianCalendar(2016, 0, 0), "rac");
+		Action action2 = new Action("Check our sales dept to make sure Larry is being tracked", new GregorianCalendar(2016, 0, 0), "rac");
 
-        // Get a customer that exists to record a call in CallHandlingService
-        Customer customer = customerManagementService.getAllCustomers().get(0);
+		List<Action> actions = new ArrayList<Action>();
+		actions.add(action1);
+		actions.add(action2);
 
-        Call call = new Call("test call");
-        List<Action> actionColl = new ArrayList<>();
+		try{
+			callService.recordCall("CS03939", newCall, actions);
+		}catch (CustomerNotFoundException e){
+			System.out.println("That customer doesn't exist");
+		}
 
-        actionColl.add(new Action("make tests", null, "testuser"));
-
-        callHandlingService.recordCall(customer.getCustomerId(), call, actionColl);
-
-        // Print the calls of "customer" to make sure the new call was added
-        customerManagementService.getFullCustomerDetail(customer.getCustomerId()).getCalls()
-                .forEach(System.out::println);
-
-        context.close();
-    }
+		System.out.println("Here are the outstanding actions:");
+		Collection<Action> incompleteActions = diaryService.getAllIncompleteActions("rac");
+		for (Action next: incompleteActions){
+			System.out.println(next);
+		}
+		
+		container.close();
+	}
 }

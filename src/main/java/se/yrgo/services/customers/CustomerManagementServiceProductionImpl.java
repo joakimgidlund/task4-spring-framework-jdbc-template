@@ -3,6 +3,7 @@ package se.yrgo.services.customers;
 import java.util.List;
 
 import se.yrgo.dataaccess.CustomerDao;
+import se.yrgo.dataaccess.RecordNotFoundException;
 import se.yrgo.domain.Call;
 import se.yrgo.domain.Customer;
 
@@ -19,36 +20,61 @@ public class CustomerManagementServiceProductionImpl implements CustomerManageme
     }
 
     @Override
-    public void updateCustomer(Customer changedCustomer) {
-        
+    public void updateCustomer(Customer changedCustomer) throws CustomerNotFoundException {
+        try {
+            customerDao.update(changedCustomer);
+        } catch (RecordNotFoundException ex) {
+            throw new CustomerNotFoundException();
+        }
     }
 
     @Override
-    public void deleteCustomer(Customer oldCustomer) {
-        
+    public void deleteCustomer(Customer oldCustomer) throws CustomerNotFoundException {
+        try {
+            customerDao.delete(oldCustomer);
+        } catch(RecordNotFoundException ex) {
+            throw new CustomerNotFoundException();
+        }
     }
 
     @Override
     public Customer findCustomerById(String customerId) throws CustomerNotFoundException {
-        return null;
+        try {
+            return customerDao.getById(customerId);
+        } catch (RecordNotFoundException ex) {
+            throw new CustomerNotFoundException();
+        }
     }
 
     @Override
-    public List<Customer> findCustomersByName(String name) {
-        return null;
+    public List<Customer> findCustomersByName(String name) throws CustomerNotFoundException {
+        try {
+            return customerDao.getByName(name);
+        } catch (RecordNotFoundException ex) {
+            throw new CustomerNotFoundException();
+        }
     }
 
     @Override
-    public List<Customer> getAllCustomers() {
-        return null;
+    public List<Customer> getAllCustomers() throws CustomerNotFoundException {
+        try {
+            return customerDao.getAllCustomers();
+        } catch (RecordNotFoundException ex) {
+            throw new CustomerNotFoundException();
+        }
     }
 
     @Override
     public Customer getFullCustomerDetail(String customerId) throws CustomerNotFoundException {
-        return null;
+        try {
+            return customerDao.getFullCustomerDetail(customerId);
+        } catch (RecordNotFoundException e) {
+            throw new CustomerNotFoundException();
+        }
     }
 
     @Override
     public void recordCall(String customerId, Call callDetails) throws CustomerNotFoundException {
+        
     }    
 }

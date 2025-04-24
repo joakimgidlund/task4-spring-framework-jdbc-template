@@ -22,7 +22,7 @@ public class DiaryManagementServiceMockImpl implements DiaryManagementService {
 	public List<Action> getAllIncompleteActions(String requiredUser) {
 		List<Action> actionList = new ArrayList<>();
 
-		for(Action action : actionList) {
+		for(Action action : allActions) {
 			if(action.getOwningUser().equals(requiredUser) && !action.isComplete()) {
 				actionList.add(action);
 			}
