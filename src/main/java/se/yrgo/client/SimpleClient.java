@@ -17,14 +17,14 @@ import se.yrgo.services.diary.DiaryManagementService;
 
 public class SimpleClient {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CustomerNotFoundException {
 		ClassPathXmlApplicationContext container = new ClassPathXmlApplicationContext("application.xml");
 
 		CustomerManagementService customerService = container.getBean(CustomerManagementService.class);
 		CallHandlingService callService = container.getBean(CallHandlingService.class);
 		DiaryManagementService diaryService = container.getBean(DiaryManagementService.class);
 
-		customerService.newCustomer(new Customer("CS03939", "Acme", "Good Customer"));
+		// customerService.newCustomer(new Customer("CS03939", "Acme", "Good Customer"));
 
 		Call newCall = new Call("Larry Wall called from Acme Corp");
 		Action action1 = new Action("Call back Larry to ask how things are going", new GregorianCalendar(2016, 0, 0), "rac");
@@ -40,12 +40,15 @@ public class SimpleClient {
 			System.out.println("That customer doesn't exist");
 		}
 
+		Customer testCustomer = customerService.getFullCustomerDetail("CS03939");
+		System.out.println(testCustomer.getCompanyName() + " " + testCustomer.getCalls());
+
 		System.out.println("Here are the outstanding actions:");
 		Collection<Action> incompleteActions = diaryService.getAllIncompleteActions("rac");
 		for (Action next: incompleteActions){
 			System.out.println(next);
 		}
-		
+
 		container.close();
 	}
 }

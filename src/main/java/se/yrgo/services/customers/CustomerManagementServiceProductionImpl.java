@@ -75,6 +75,10 @@ public class CustomerManagementServiceProductionImpl implements CustomerManageme
 
     @Override
     public void recordCall(String customerId, Call callDetails) throws CustomerNotFoundException {
-        
+        try {
+            customerDao.addCall(callDetails, customerId);
+        } catch (RecordNotFoundException ex) {
+            throw new CustomerNotFoundException();
+        }
     }    
 }
