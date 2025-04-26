@@ -37,11 +37,11 @@ public class CustomerDaoJdbcTemplateImpl implements CustomerDao {
 
     private void createTables() {
         try {
-            // this.template.update(CREATE_CUSTOMER_SQL);
-            // this.template.update(CREATE_PHONE_SQL);
+            this.template.update(CREATE_CUSTOMER_SQL);
+            this.template.update(CREATE_PHONE_SQL);
         } catch(org.springframework.jdbc.BadSqlGrammarException ex){
-			// System.out.println("Assuming the Action table exists");
-            ex.printStackTrace();
+			System.out.println("Assuming the Action table exists");
+            // ex.printStackTrace();
         }
     }
 
@@ -78,7 +78,8 @@ public class CustomerDaoJdbcTemplateImpl implements CustomerDao {
     @Override
     public Customer getFullCustomerDetail(String customerId) throws RecordNotFoundException {
         Customer customer = template.queryForObject("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID=?", new CustomerRowMapper(), customerId);
-        customer.setCalls(template.query("SELECT * FROM PHONE WHERE CUSTOMER_ID=?", Call.class, customerId);
+        customer.setCalls(template.query("SELECT * FROM PHONE WHERE CUSTOMER_ID=?", new CallRowMapper(), customerId));
+        return customer;
     }
 
     @Override
@@ -96,5 +97,14 @@ class CustomerRowMapper implements RowMapper<Customer> {
 		String notes = rs.getString(5);
 
 		return new Customer(customerId, companyName, email, telephone, notes);
+	}
+}
+
+class CallRowMapper implements RowMapper<Call> {
+	public Call mapRow(ResultSet rs, int arg1) throws SQLException 	{
+		String notes = rs.getString(4);
+        Date timeAndDate = rs.getDate(3);
+
+		return new Call(notes, timeAndDate);
 	}
 }

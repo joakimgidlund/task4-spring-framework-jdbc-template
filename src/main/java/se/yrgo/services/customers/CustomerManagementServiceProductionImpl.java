@@ -68,7 +68,7 @@ public class CustomerManagementServiceProductionImpl implements CustomerManageme
     public Customer getFullCustomerDetail(String customerId) throws CustomerNotFoundException {
         try {
             return customerDao.getFullCustomerDetail(customerId);
-        } catch (RecordNotFoundException e) {
+        } catch (RecordNotFoundException | NullPointerException ex) {
             throw new CustomerNotFoundException();
         }
     }

@@ -24,7 +24,8 @@ public class SimpleClient {
 		CallHandlingService callService = container.getBean(CallHandlingService.class);
 		DiaryManagementService diaryService = container.getBean(DiaryManagementService.class);
 
-		// customerService.newCustomer(new Customer("CS03939", "Acme", "Good Customer"));
+		//The table is created with customerId as primary key, meaning only one copy of this customer
+		customerService.newCustomer(new Customer("CS03939", "Acme", "Good Customer"));
 
 		Call newCall = new Call("Larry Wall called from Acme Corp");
 		Action action1 = new Action("Call back Larry to ask how things are going", new GregorianCalendar(2016, 0, 0), "rac");
@@ -40,8 +41,10 @@ public class SimpleClient {
 			System.out.println("That customer doesn't exist");
 		}
 
+		//Create a test customer to test adding calls and retrieving them
+		System.out.println("Printing calls for test customer:");
 		Customer testCustomer = customerService.getFullCustomerDetail("CS03939");
-		System.out.println(testCustomer.getCompanyName() + " " + testCustomer.getCalls());
+		System.out.println(testCustomer.getCompanyName() + " " + testCustomer.getCalls() + "\n");
 
 		System.out.println("Here are the outstanding actions:");
 		Collection<Action> incompleteActions = diaryService.getAllIncompleteActions("rac");
